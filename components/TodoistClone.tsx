@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
+import AddTask from "./AddTask";
 
 interface Task {
   id: number;
@@ -10,31 +10,51 @@ interface Task {
   completed: boolean;
 }
 
-export default function Todo() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-
-  const addTask = (text: string) => {
-    setTasks([...tasks, { id: Date.now(), text, completed: false }]);
-  };
+export default function TodoistClone() {
+  const [tasks, setTasks] = useState<Task[]>([
+    { id: 1, text: "First Task", completed: false },
+    { id: 2, text: "Second Task", completed: true },
+  ]);
 
   const toggleTask = (id: number) => {
-    setTasks(
-      tasks.map((task) =>
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
   };
 
   const deleteTask = (id: number) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   };
 
-  
+  const editTask = (id: number, newText: string) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, text: newText } : task
+      )
+    );
+  };
+
+  const addTask = (text: string) => {
+    const newTask: Task = {
+      id: tasks.length + 1,
+      text,
+      completed: false,
+    };
+    setTasks((prevTasks) => [...prevTasks, newTask]);
+  };
+
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold mb-4 text-gray-800">Todoist Clone</h1>
-      <TaskForm addTask={addTask} />
-      <TaskList tasks={tasks} toggleTask={toggleTask} deleteTask={deleteTask} />
+    <div className="p-4 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">My TODO List</h1>
+      <AddTask addTask={addTask} />
+      <TaskList
+        tasks={tasks}
+        toggleTask={toggleTask}
+        deleteTask={deleteTask}
+        editTask={editTask}
+      />
     </div>
   );
 }
